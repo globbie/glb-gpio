@@ -10,6 +10,8 @@
 
 #include <linux/gpio.h>
 
+#include "chip.h"
+
 // see original 'https://github.com/torvalds/linux/blob/master/tools/gpio/lsgpio.c' by Linus Walleij
 
 struct gpio_flag {
