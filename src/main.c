@@ -10,7 +10,7 @@
 
 #include <linux/gpio.h>
 
-#include "chip.h"
+#include "gpio.h"
 
 // see original 'https://github.com/torvalds/linux/blob/master/tools/gpio/lsgpio.c' by Linus Walleij
 
@@ -138,7 +138,7 @@ exit:
     return ret;
 }
 
-int main(int argc, char **argv)
+int main__(int argc, char **argv)
 {
     const struct dirent *entry;
     DIR *dir;
@@ -159,5 +159,10 @@ int main(int argc, char **argv)
     closedir(dir);
     return EXIT_SUCCESS;
 error:
+    return EXIT_FAILURE;
+}
+
+int main(int argc, char **argv)
+{
     return EXIT_FAILURE;
 }
