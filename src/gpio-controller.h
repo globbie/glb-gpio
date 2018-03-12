@@ -17,6 +17,7 @@ struct gpioController
 
     // public methods
     gpioError_t (*del)(struct gpioController *self);
+    gpioError_t (*discover)(struct gpioController *self);
 };
 
 gpioError_t gpioController_new(struct gpioController **controller);

@@ -13,9 +13,6 @@
 
 #include "gpio.h"
 
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
 
 // see original 'https://github.com/torvalds/linux/blob/master/tools/gpio/lsgpio.c' by Linus Walleij
 /*
