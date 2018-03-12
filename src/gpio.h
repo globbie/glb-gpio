@@ -1,4 +1,4 @@
 #pragma once
 
-#include "gpio-chip.h"
+#include "gpio-controller.h"
 

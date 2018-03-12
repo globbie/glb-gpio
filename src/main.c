@@ -1,6 +1,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -12,8 +13,12 @@
 
 #include "gpio.h"
 
-// see original 'https://github.com/torvalds/linux/blob/master/tools/gpio/lsgpio.c' by Linus Walleij
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 
+// see original 'https://github.com/torvalds/linux/blob/master/tools/gpio/lsgpio.c' by Linus Walleij
+/*
 struct gpio_flag {
     char *name;
     unsigned long mask;
@@ -137,7 +142,9 @@ exit:
     close(fd);
     return ret;
 }
+*/
 
+/*
 int main__(int argc, char **argv)
 {
     const struct dirent *entry;
@@ -161,8 +168,20 @@ int main__(int argc, char **argv)
 error:
     return EXIT_FAILURE;
 }
+*/
 
 int main(int argc, char **argv)
 {
-    return EXIT_FAILURE;
+    struct gpioController *ctl;
+    gpioError_t err;
+
+    err = gpioController_new(&ctl);
+    if (err != gpio_ok) {
+        fprintf(stderr, "gpioController_new() failed, error: %s\n", err->string);
+        return EXIT_FAILURE;
+    }
+
+    printf("finish\n");
+    return EXIT_SUCCESS;
 }
+

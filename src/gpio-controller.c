@@ -61,5 +61,7 @@ gpioController_new(struct gpioController **controller)
 
     self->del = delete__;
 
+    return discover(self);
+
     return gpio_ok;
 }

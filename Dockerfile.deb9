@@ -1,0 +1,14 @@
+FROM debian:9
+
+RUN apt-get update && apt-get -y install \
+        gcc \
+        cmake \
+        make
+
+ADD . /root/project
+
+RUN cd /root/project && ls -l && mkdir -p build && cd build && cmake .. && make
+RUN cd /root/project/build/bin && ./gpio-bin
+
+#ENTRYPOINT ["/root/run.sh"]
+
