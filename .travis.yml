@@ -1,0 +1,17 @@
+sudo: false
+services:
+- docker
+language: c
+os:
+- linux
+cache:
+  directories:
+  - "$HOME/.cache"
+env:
+  matrix:
+  - DOCKERFILE=Dockerfile.deb9
+install:
+- docker build -f ${DOCKERFILE} .
+notifications:
+  slack:
+    secure: foqxUHu20Z4A6fw2Gwbyb2Z4uniZxSMWQLB7n0NaWx0U71pO2P/ggjbXp3zL+1jKNiwlyqz55QQdqHP71g/TrYs9G+x7OjBm5RgNRefcLb+FH3IjL046glcNENk8agJAGLTtOb4s47eAq9syfIn9MXvD1XFxvVBBhSu2HVB68VULnxFi2w5JAJzaTK2OiF8oZHyOFf6B9kjM6s/pl7ONTahXDrOKTnEaQWMbpamGu9Dmq90KQ5Gn0utjsruS9R1CnxrQGRHVvZiP4Eye9uZ+S1493xD7GP8OLc0iPLLXe/iIZNF8l/WALHdzHoH94yewgYjQwoAxwrttjlAgvbZjChgW9aNLqnxFCIw/m3r83sf7RvHyyPyMW4JfQPbj0O6ds5UuOYoVus92AyE3KzYQ1cihzZoCUM9L1exh29V02VpPqiddmzTNibjeV+08Wk74w6r2/HtMm1kkc7srjoN8fwk25Sf6vBSe2TAuDhu9CcxxdfWFfOxM/rBK/vzeGNUlFlTp1ueEFIzFDNqgSLMvSQa077rgvTPYbzA85UC3ws0DtKVW+5aMN4C1cnlKAECi57LTrpcwkt8KM2W/oCgOgaxGRLPXWrGBApKLda2w41xDIhiNEndyiS2ZYPsaWherl5sFBkCdaWsmHCBsuvdhEIaDIZzN8Eo52UikhDBw6g4=
