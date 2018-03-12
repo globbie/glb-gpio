@@ -1,7 +1,6 @@
 sudo: false
 services:
 - docker
-language: c
 os:
 - linux
 cache:
