@@ -9,7 +9,7 @@ cache:
 env:
   matrix:
   - DOCKERFILE=Dockerfile.deb9
-install:
+script:
 - docker build -f ${DOCKERFILE} .
 notifications:
   slack:
