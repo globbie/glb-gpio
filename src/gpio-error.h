@@ -10,11 +10,12 @@ typedef struct {
 
 
 #define GPIO_ERRORS_MAP(XX) \
-    XX(0, ok,      "ok") \
-    XX(1, fail,    "unspecified failure") \
-    XX(2, nomem,   "could not allocate memory") \
-    XX(3, trunc,   "string was truncated") \
-    XX(4, notfound, "item was not found")
+    XX(0, ok,       "ok") \
+    XX(1, fail,     "unspecified failure") \
+    XX(2, nomem,    "could not allocate memory") \
+    XX(3, trunc,    "string was truncated") \
+    XX(4, notfound, "item was not found") \
+    XX(5, limit,    "limit was reached")
 
 #define XX(code__, name__, string__) extern gpioError GPIO_##name__;
     GPIO_ERRORS_MAP(XX)

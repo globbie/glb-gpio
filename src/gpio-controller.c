@@ -14,7 +14,20 @@
 static gpioError_t
 new_device(struct gpioController *self, const char *dev_path, size_t dev_path_len, struct gpioChip **chip)
 {
-    return gpio_fail;
+    struct gpioChip *new_chip;
+    gpioError_t err;
+
+    if (self->chips_count == GPIO_CHIPS_COUNT_MAX) return gpio_limit;
+
+    new_chip = &self->chips[self->chips_count];
+
+    err = gpioChip_init(new_chip, dev_path, dev_path_len);
+    if (err != gpio_ok) return err;
+
+    ++self->chips_count;
+    *chip = new_chip;
+
+    return gpio_ok;
 }
 
 static gpioError_t

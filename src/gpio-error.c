@@ -11,3 +11,4 @@ GPIO_ERRORS_MAP(XX)
 #define XX(code__, name__, string__) gpioError_t gpio_##name__ = &GPIO_##name__;
 GPIO_ERRORS_MAP(XX)
 #undef XX
+
