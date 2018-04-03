@@ -76,6 +76,7 @@ discover(struct gpioController *self)
             goto exit;
         }
         strncat(device_path, entry->d_name, device_name_len);
+        device_path_len += device_name_len;
 
         err = find_device(self, device_path, device_path_len, &chip);
         if (err == gpio_ok) {
