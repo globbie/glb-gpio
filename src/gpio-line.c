@@ -10,12 +10,12 @@
 
 static void print_flags(unsigned long flags)
 {
-    printf("\t\tkern: %lu, out: %lu, a-l: %lu, o-d: %lu, o-s: %lu\n",
-            flags & GPIOLINE_FLAG_KERNEL,
-            flags & GPIOLINE_FLAG_IS_OUT,
-            flags & GPIOLINE_FLAG_ACTIVE_LOW,
-            flags & GPIOLINE_FLAG_OPEN_DRAIN,
-            flags & GPIOLINE_FLAG_OPEN_SOURCE);
+    printf("\t\tkern: %u, out: %u, a-l: %u, o-d: %u, o-s: %u\n",
+            flags & GPIOLINE_FLAG_KERNEL ? 1 : 0,
+            flags & GPIOLINE_FLAG_IS_OUT ? 1 : 0,
+            flags & GPIOLINE_FLAG_ACTIVE_LOW ? 1 : 0,
+            flags & GPIOLINE_FLAG_OPEN_DRAIN ? 1 : 0,
+            flags & GPIOLINE_FLAG_OPEN_SOURCE ? 1 : 0);
 }
 
 gpioError_t gpioLine_init(struct gpioLine *self, size_t line_offset, int fd)
@@ -33,5 +33,5 @@ gpioError_t gpioLine_init(struct gpioLine *self, size_t line_offset, int fd)
 
     print_flags(self->info.flags);
 
-    return gpio_fail;
+    return gpio_ok;
 }
