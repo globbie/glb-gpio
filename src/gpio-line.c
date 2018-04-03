@@ -3,5 +3,6 @@
 
 gpioError_t gpioLine_init(struct gpioLine *self)
 {
+    (void) self;
     return gpio_fail;
 }

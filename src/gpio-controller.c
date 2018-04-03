@@ -33,6 +33,7 @@ new_device(struct gpioController *self, const char *dev_path, size_t dev_path_le
 static gpioError_t
 find_device(struct gpioController *self, const char *dev_path, size_t dev_path_len, struct gpioChip **chip)
 {
+    (void) self, (void) dev_path, (void) dev_path_len, (void) chip;
     return gpio_notfound;
 }
 
@@ -62,30 +63,30 @@ discover(struct gpioController *self)
         char device_path[PATH_MAX] = "/dev/";
         size_t device_path_len = sizeof("/dev/") - 1;
 
-        if (prefix_matches(entry->d_name, strlen(entry->d_name), "gpiochip", sizeof("gpiochip") - 1)) {
-            size_t device_name_len = strlen(entry->d_name);
-            struct gpioChip *chip;
+        if (!prefix_matches(entry->d_name, strlen(entry->d_name), "gpiochip", sizeof("gpiochip") - 1))
+            continue;
 
-            printf("found gpio chip: '%s'\n", entry->d_name);
+        size_t device_name_len = strlen(entry->d_name);
+        struct gpioChip *chip;
 
-            if (device_path_len > sizeof(device_path) - device_path_len) {
-                err = gpio_trunc;
-                goto exit;
-            }
-            strncat(device_path, entry->d_name, device_name_len);
+        printf("found gpio chip: '%s'\n", entry->d_name);
 
-            err = find_device(self, device_path, device_path_len, &chip);
-            if (err == gpio_ok) {
-                continue;
-            } else if (err == gpio_notfound) {
-
-                err = new_device(self, device_path, device_path_len, &chip);
-                if (err != gpio_ok) goto exit;
-
-            } else {
-                goto exit;
-            }
+        if (device_path_len > sizeof(device_path) - device_path_len) {
+            err = gpio_trunc;
+            goto exit;
         }
+        strncat(device_path, entry->d_name, device_name_len);
+
+        err = find_device(self, device_path, device_path_len, &chip);
+        if (err == gpio_ok) {
+            continue;
+        } else if (err == gpio_notfound) {
+            err = new_device(self, device_path, device_path_len, &chip);
+            if (err != gpio_ok) goto exit;
+        } else {
+            goto exit;
+        }
+
     }
 
     err = gpio_ok;

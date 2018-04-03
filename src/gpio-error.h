@@ -15,7 +15,8 @@ typedef struct {
     XX(2, nomem,    "could not allocate memory") \
     XX(3, trunc,    "string was truncated") \
     XX(4, notfound, "item was not found") \
-    XX(5, limit,    "limit was reached")
+    XX(5, limit,    "limit was reached") \
+    XX(6, system,   "system call failure")
 
 #define XX(code__, name__, string__) extern gpioError GPIO_##name__;
     GPIO_ERRORS_MAP(XX)

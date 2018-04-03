@@ -167,7 +167,7 @@ error:
 }
 */
 
-int main(int argc, char **argv)
+int main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
 {
     struct gpioController *ctl;
     gpioError_t err;
