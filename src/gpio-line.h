@@ -12,5 +12,5 @@ struct gpioLine
     gpioError_t (*destroy)(struct gpioLine *self);
 };
 
-gpioError_t gpioLine_init(struct gpioLine *self);
+gpioError_t gpioLine_init(struct gpioLine *self, size_t line_offset, int fd);
 
