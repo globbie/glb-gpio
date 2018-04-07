@@ -46,6 +46,19 @@ prefix_matches(const char *str, size_t str_len, const char *prefix, size_t prefi
 }
 
 static gpioError_t
+get_chip(struct gpioController *self, const char *chip_name, struct gpioChip **chip)
+{
+    for (size_t i = 0; i < self->chips_count; ++i) {
+        struct gpioChip *iter = &self->chips[i];
+        if (strcmp(iter->info.name, chip_name) == 0) {
+            *chip = iter;
+            return gpio_ok;
+        }
+    }
+    return gpio_notfound;
+}
+
+static gpioError_t
 discover(struct gpioController *self)
 {
     const struct dirent *entry;
@@ -114,6 +127,7 @@ gpioController_new(struct gpioController **controller)
 
     self->del = delete__;
     self->discover = discover;
+    self->get_chip = get_chip;
 
     err = self->discover(self);
     if (err != gpio_ok) goto error;

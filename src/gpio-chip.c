@@ -6,6 +6,13 @@
 #include <string.h>
 #include <sys/ioctl.h>
 
+
+static gpioError_t
+get_line(struct gpioChip *self, size_t line_number, struct gpioLine **line)
+{
+    return gpio_fail;
+}
+
 static gpioError_t
 destroy__(struct gpioChip *self __attribute__((unused)))
 {

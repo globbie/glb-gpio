@@ -16,7 +16,8 @@ typedef struct {
     XX(3, trunc,    "string was truncated") \
     XX(4, notfound, "item was not found") \
     XX(5, limit,    "limit was reached") \
-    XX(6, system,   "system call failure")
+    XX(6, system,   "system call failure") \
+    XX(7, invalid,  "invalid argument")
 
 #define XX(code__, name__, string__) extern gpioError GPIO_##name__;
     GPIO_ERRORS_MAP(XX)

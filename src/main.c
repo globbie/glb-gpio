@@ -14,158 +14,45 @@
 #include "gpio.h"
 
 
-// see original 'https://github.com/torvalds/linux/blob/master/tools/gpio/lsgpio.c' by Linus Walleij
-/*
-struct gpio_flag {
-    char *name;
-    unsigned long mask;
-};
-
-struct gpio_flag flagnames[] = {
-    {
-        .name = "kernel",
-        .mask = GPIOLINE_FLAG_KERNEL,
-    },
-    {
-        .name = "output",
-        .mask = GPIOLINE_FLAG_IS_OUT,
-    },
-    {
-        .name = "active-low",
-        .mask = GPIOLINE_FLAG_ACTIVE_LOW,
-    },
-    {
-        .name = "open-drain",
-        .mask = GPIOLINE_FLAG_OPEN_DRAIN,
-    },
-    {
-        .name = "open-source",
-        .mask = GPIOLINE_FLAG_OPEN_SOURCE,
-    },
-};
-
-void print_flags(unsigned long flags)
+static gpioError_t
+set(struct gpioController *ctl, size_t argc, const char **argv)
 {
-    int i;
-    int printed = 0;
-
-    for (i = 0; i < sizeof(flagnames) / sizeof((flagnames)[0]); i++) {
-        if (flags & flagnames[i].mask) {
-            if (printed)
-                fprintf(stdout, " ");
-            fprintf(stdout, "%s", flagnames[i].name);
-            printed++;
-        }
+    if (argc != 4) {
+        fprintf(stderr, "'set' command required exactly three arguments:\n"
+                "\t set <chip name> <line number> <value>\n");
+        return gpio_invalid;
     }
+
+    const char *chip_name = argv[1];
+    const char *line_number_ = argv[2];
+    const char *value_ = argv[3];
+
+    size_t line_number = 0;
+    unsigned int value = 0;
+
+    struct gpioChip *chip = NULL;
+    struct gpioLine *line = NULL;
+
+    gpioError_t err;
+
+    // todo: use proper functions, check limits
+    line_number = strtoul(line_number_, NULL, 10);
+    value = strtoul(value_, NULL, 10);
+
+    err = ctl->get_chip(ctl, chip_name, &chip);
+    if (err != gpio_ok) {
+        fprintf(stderr, "chip '%s', error: '%s'\n", chip_name, err->string);
+        return err;
+    }
+
+    err = chip->get_line(chip, line_number, &line);
+    if (err != gpio_ok) {
+        fprintf(stderr, "chip '%s' line '%zu', error '%s'\n", chip_name, line_number, err->string);
+        return err;
+    }
+
+    return gpio_ok;
 }
-
-static bool
-is_prefix(const char *str, size_t str_len, const char *prefix, size_t prefix_len)
-{
-    if (str_len <= prefix_len) return false;
-    if (strncmp(str, prefix, prefix_len) == 0) return true;
-    return false;
-}
-
-static int
-show_device(const char *device_name, size_t device_name_len)
-{
-    struct gpiochip_info chip_info;
-
-    char chrdev_name[PATH_MAX] = "/dev/";
-    char chrdev_name_len = sizeof("/dev/");
-
-    int fd;
-    int err;
-    int ret = -1;
-
-    if (device_name_len > sizeof(chrdev_name) - chrdev_name_len) {
-        fprintf(stderr, "chrdev_name truncated\n");
-        return -1;
-    }
-
-    strncat(chrdev_name, device_name, device_name_len);
-    printf("debug: chrdev_name: '%s'\n", chrdev_name);
-
-    fd = open(chrdev_name, 0);
-    if (fd == -1) {
-        fprintf(stderr, "open('%s') failed, error: '%s'\n", chrdev_name, strerror(errno));
-        return -1;
-    }
-
-    err = ioctl(fd, GPIO_GET_CHIPINFO_IOCTL, &chip_info);
-    if (err == -1) {
-        perror("CHIPINFO IOCTL call failed");
-        goto exit;
-    }
-
-    printf("gpio chip: %s, '%s', %u gpio lines\n", chip_info.name, chip_info.label, chip_info.lines);
-
-    for (size_t i = 0; i < chip_info.lines; ++i) {
-        struct gpioline_info line_info;
-        memset(&line_info, 0, sizeof(line_info));
-
-        line_info.line_offset = i;
-
-        err = ioctl(fd, GPIO_GET_LINEINFO_IOCTL, &line_info);
-        if (err == -1) {
-            perror("LINEINGO IOCTL call failed");
-            goto exit;
-        }
-
-        printf("\tline %2d:", line_info.line_offset);
-
-        if (line_info.name[0])
-            printf(" '%s'", line_info.name);
-        else
-            printf(" unnamed");
-
-        if (line_info.consumer[0])
-            printf(" '%s'", line_info.consumer);
-        else
-            printf(" unused");
-
-        if (line_info.flags) {
-            printf(" [");
-            print_flags(line_info.flags);
-            printf("]");
-        }
-
-        printf("\n");
-    }
-
-    ret = 0;
-exit:
-    close(fd);
-    return ret;
-}
-*/
-
-/*
-int main__(int argc, char **argv)
-{
-    const struct dirent *entry;
-    DIR *dir;
-
-    dir = opendir("/dev");
-    if (!dir) {
-        perror("opendir failed");
-        goto error;
-    }
-
-    while ((entry = readdir(dir))) {
-        if (is_prefix(entry->d_name, strlen(entry->d_name), "gpiochip", sizeof("gpiochip") - 1)) {
-            printf("found gpio chip: '%s'\n", entry->d_name);
-            show_device(entry->d_name, strlen(entry->d_name));
-        }
-    }
-
-    closedir(dir);
-    return EXIT_SUCCESS;
-error:
-    return EXIT_FAILURE;
-}
-*/
 
 int main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
 {
@@ -178,7 +65,42 @@ int main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
         return EXIT_FAILURE;
     }
 
-    printf("finish\n");
+    char *line = NULL;
+    size_t line_cap = 0;
+    ssize_t line_len;
+
+    for (;;) {
+        printf(">>> ");
+
+        line_len = getline(&line, &line_cap, stdin);
+        if (line_len < 0) {
+            printf("\n");
+            break;
+        }
+
+        const char *cmd_args[10];
+        size_t cmd_args_count = 0;
+        const char *token;
+
+        while ((token = strsep(&line, " \t\n")) != NULL) {
+            if (*token == '\0') continue;
+            //printf("- '%s'\n", token);
+            cmd_args[cmd_args_count] = token;
+            ++cmd_args_count;
+            if (cmd_args_count == 10) break;
+        }
+
+        if (cmd_args_count == 0) continue;
+
+        if (strcmp(cmd_args[0], "set") == 0) {
+            err = set(ctl, cmd_args_count, cmd_args);
+            if (err == gpio_ok) goto exit;
+        }
+    }
+
+exit:
+
+    ctl->del(ctl);
     return EXIT_SUCCESS;
 }
 
