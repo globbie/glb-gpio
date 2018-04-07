@@ -7,8 +7,11 @@
 struct gpioLine
 {
     struct gpioline_info info;
+    int fd;
 
     // public methods
+    gpioError_t (*set)(struct gpioLine *self, unsigned int value);
+    gpioError_t (*get)(struct gpioLine *self, unsigned int *value);
     gpioError_t (*destroy)(struct gpioLine *self);
 };
 

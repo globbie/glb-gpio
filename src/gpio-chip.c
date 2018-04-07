@@ -7,8 +7,9 @@
 #include <sys/ioctl.h>
 
 static gpioError_t
-destroy__(struct gpioChip *self)
+destroy__(struct gpioChip *self __attribute__((unused)))
 {
+    // todo
     return gpio_ok;
 }
 
